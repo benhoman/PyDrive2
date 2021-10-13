@@ -520,6 +520,15 @@ class GoogleDriveFile(ApiAttributeMixin, ApiResource):
     """
         self._FilesDelete(param=param)
 
+    def Copy(self, param=None):
+        """Copy a file.
+
+    :param param: additional parameter to file.
+    :type param: dict.
+    :raises: ApiRequestError
+    """
+        self._FilesCopy(param=param)
+
     def InsertPermission(self, new_permission, param=None):
         """Insert a new permission. Re-fetches all permissions after call.
 
@@ -704,6 +713,29 @@ class GoogleDriveFile(ApiAttributeMixin, ApiResource):
             raise ApiRequestError(error)
         else:
             return True
+
+    @LoadAuth
+    def _FilesCopy(self, param=None):
+        """Copy a file using Files.Copy()
+
+    :param param: additional parameter to file.
+    :type param: dict.
+    :raises: ApiRequestError
+    """
+        if param is None:
+            param = {}
+        param["fileId"] = self.metadata.get("id") or self["id"]
+
+        # Teamdrive support
+        param["supportsAllDrives"] = True
+
+        try:
+            return self.auth.service.files().copy(**param).execute(
+                http=self.http)
+        except errors.HttpError as error:
+            raise ApiRequestError(error)
+        else:
+            return None
 
     @LoadAuth
     @LoadMetadata

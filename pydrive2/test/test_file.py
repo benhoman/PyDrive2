@@ -334,6 +334,23 @@ class GoogleDriveFileTest(unittest.TestCase):
 
         self.DeleteUploadedFiles(drive, [file1["id"]])
 
+    # Tests for Copy.
+    # ===============
+
+    def test_Files_Copy_File(self):
+        drive = GoogleDrive(self.ga)
+        file1 = drive.CreateFile()
+        pydrive_retry(file1.Upload)
+
+        # Copy File
+        file2 = file1.Copy()
+
+        # Check ids are different
+        self.assertNotEqual(file1["id"], file2["id"])
+
+        # Cleanup
+        self.DeleteUploadedFiles(drive, [file1["id"], file2["id"]])
+
     # Tests for Trash/UnTrash/Delete.
     # ===============================
 
